@@ -50,19 +50,20 @@ public class EquationSolver {
                         "Шаг", "a", "b", "x", "func(a)", "func(b)", "func(x)", "|b - a|");
             }
 
-            while (Math.abs(b - a) > E) {
+            while (Math.abs(func.apply(b) - func.apply(a)) > E) {
                 count++;
-                a = b - (b - a) * func.apply(b) / (func.apply(b) - func.apply(a));
-                b = a + (a - b) * func.apply(a) / (func.apply(a) - func.apply(b));
-                // a, b — (i - 1)-й и i-й члены
-
-                x = (a + b) / 2;
+                
+                double c = (func.apply(b) * a - func.apply(a) * b) / (func.apply(b) - func.apply(a));
+                
+                if(func.apply(a) * func.apply(c) > 0) a = c;
+                    else b =c;
+                    
                 if(fileOut){
                     filePrintStream.printf("%15d %15f %15f %15f %15f %15f %15f %15f %n",
-                            count, a, b, x, func.apply(a), func.apply(b), func.apply(x), Math.abs(b - a));
+                            count, a, b, c, func.apply(a), func.apply(b), func.apply(c), Math.abs(b - a));
                 }else {
                     System.out.printf("%15d %15f %15f %15f %15f %15f %15f %15f %n",
-                            count, a, b, x, func.apply(a), func.apply(b), func.apply(x), Math.abs(b - a));
+                            count, a, b, c, func.apply(a), func.apply(b), func.apply(c), Math.abs(b - a));
                 }
             }
             if(fileOut){
