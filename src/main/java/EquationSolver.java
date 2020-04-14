@@ -85,7 +85,7 @@ public class EquationSolver {
 
         if(fileOut){
             System.out.println("Поместите файл в папку src и введите название файла:");
-            String path = "/Users/andreyklyuev/Desktop/ВУЗ/4 семестр/Лабы/Вычислительная математика/Lab3VM/src/" + scn.next();
+            String path = "YOUR PATH TO THE SRC FOLDER HERE" + scn.next();
             try {
                 fos = new FileOutputStream(path);
                 filePrintStream = new PrintStream(fos);
@@ -142,7 +142,7 @@ public class EquationSolver {
 
             if(fileOut){
                 System.out.println("Поместите файл в папку src и введите название файла:");
-                String path = "/Users/andreyklyuev/Desktop/ВУЗ/4 семестр/Лабы/Вычислительная математика/Lab3VM/src/" + scn.next();
+                String path = "YOUR PATH TO THE SRC FOLDER HERE" + scn.next();
                 try {
                     fos = new FileOutputStream(path);
                     filePrintStream = new PrintStream(fos);
@@ -190,7 +190,7 @@ public class EquationSolver {
                 System.out.println("Файл должен содержать левую границу(a), правую границу(b), желаемую погрешность(E).");
                 System.out.println("Все числа должны быть записаны через пробел.\n");
                 System.out.println("Поместите файл в папку src и введите название файла:");
-                String path = "/Users/andreyklyuev/Desktop/ВУЗ/4 семестр/Лабы/Вычислительная математика/Lab3VM/src/" + scn.next();
+                String path = "YOUR PATH TO THE SRC FOLDER HERE" + scn.next();
                 try {
                     Scanner sc = new Scanner(new File(path));
 
@@ -255,7 +255,7 @@ public class EquationSolver {
                 System.out.println("Файл должен содержать начальное значение(x0), правую границу(x1), желаемую погрешность(E).");
                 System.out.println("Все числа должны быть записаны через пробел.\n");
                 System.out.println("Поместите файл в папку src и введите название файла:");
-                String path = "/Users/andreyklyuev/Desktop/ВУЗ/4 семестр/Лабы/Вычислительная математика/Lab3VM/src/" + scn.next();
+                String path = "YOUR PATH TO THE SRC FOLDER HERE" + scn.next();
                 try {
                     Scanner sc = new Scanner(new File(path));
 
@@ -306,7 +306,7 @@ public class EquationSolver {
                 System.out.println("Файл должен содержать левую границу(x0), правую границу(x1), желаемую погрешность(E).");
                 System.out.println("Все числа должны быть записаны через пробел.\n");
                 System.out.println("Поместите файл в папку src и введите название файла:");
-                String path = "/Users/andreyklyuev/Desktop/ВУЗ/4 семестр/Лабы/Вычислительная математика/Lab3VM/src/" + scn.next();
+                String path = "YOUR PATH TO THE SRC FOLDER HERE" + scn.next();
                 try {
                     Scanner sc = new Scanner(new File(path));
 
