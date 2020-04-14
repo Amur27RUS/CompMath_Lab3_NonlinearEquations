@@ -32,7 +32,7 @@ public class EquationSolver {
 
             if(fileOut){
                 System.out.println("Поместите файл в папку src и введите название файла:");
-                String path = "/Users/andreyklyuev/Desktop/ВУЗ/4 семестр/Лабы/Вычислительная математика/Lab3VM/src/" + scn.next();
+                String path = "YOUR PATH TO THE SRC FOLDER HERE" + scn.next();
                 try {
                     fos = new FileOutputStream(path);
                     filePrintStream = new PrintStream(fos);
