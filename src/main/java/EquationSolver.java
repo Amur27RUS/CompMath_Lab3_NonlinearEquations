@@ -13,35 +13,31 @@ public class EquationSolver {
     PrintStream filePrintStream;
     GraphController gc = new GraphController();
 
-    private void chordMethod(double a, double b, Function<Double, Double> func, double E){
+    private void chordMethod(double a, double b, Function<Double, Double> func, Function<Double, Double> dFunc, double E){
         //Метод Хорд
-        // a, b - пределы хорды, func - функция, E - необходимая погрешность
+        // a, b - интервал, func - функция, E - необходимая погрешность
 
         int count = 0;
-        double x;
+        double x, x0, tmpX = 12345;
 
-        if(func.apply(a)*func.apply(b) >=0){
-            System.out.println("Корней нет!");
+        if(func.apply(a)*func.apply(b) >= 0){
+            System.out.println("Корней нет! Функция имеет разные знаки на концах интервала!");
         }else {
 
             System.out.println("Как вы хотите вывести решение?");
             System.out.println("1. В файл");
             System.out.println("2. В консоль");
-
             boolean fileOut = (scn.nextInt() == 1);
-
             if(fileOut){
                 System.out.println("Поместите файл в папку src и введите название файла:");
-                String path = "YOUR PATH TO THE SRC FOLDER HERE" + scn.next();
+                String path = "PATH TO src" + scn.next();
                 try {
                     fos = new FileOutputStream(path);
                     filePrintStream = new PrintStream(fos);
                 }catch (IOException e){
-                    System.err.println("Ошибка чтения файла!");
+                    e.printStackTrace();
                 }
             }
-
-
             if(fileOut){
                     filePrintStream.printf("%15s %15s %15s %15s %15s %15s %15s %15s %n",
                             "Шаг", "a", "b", "x", "func(a)", "func(b)", "func(x)", "|b - a|");
@@ -50,88 +46,118 @@ public class EquationSolver {
                         "Шаг", "a", "b", "x", "func(a)", "func(b)", "func(x)", "|b - a|");
             }
 
-            while (Math.abs(func.apply(b) - func.apply(a)) > E) {
+            x = (a * func.apply(b) - b * func.apply(a)) / (func.apply(b) - func.apply(a));
+
+            do{
                 count++;
-                
-                double c = (func.apply(b) * a - func.apply(a) * b) / (func.apply(b) - func.apply(a));
-                
-                if(func.apply(a) * func.apply(c) > 0) a = c;
-                    else b =c;
+                if(count != 1) tmpX = x;
+
+                x = (a * func.apply(b) - b * func.apply(a)) / (func.apply(b) - func.apply(a));
+
+                x0 = tmpX;
+
+                if(func.apply(a) * func.apply(x) > 0){
+                    a = x;
+                } else{
+                    b =x;
+                }
                     
                 if(fileOut){
                     filePrintStream.printf("%15d %15f %15f %15f %15f %15f %15f %15f %n",
-                            count, a, b, c, func.apply(a), func.apply(b), func.apply(c), Math.abs(b - a));
+                            count, a, b, x, func.apply(a), func.apply(b), func.apply(x), Math.abs(b - a));
                 }else {
                     System.out.printf("%15d %15f %15f %15f %15f %15f %15f %15f %n",
-                            count, a, b, c, func.apply(a), func.apply(b), func.apply(c), Math.abs(b - a));
+                            count, a, b, x, func.apply(a), func.apply(b), func.apply(x), Math.abs(b - a));
                 }
-            }
+
+                if (count > 350){
+                    break;
+                }
+
+            }while (Math.abs(func.apply(x)) > E && Math.abs(x-x0) > E);
+
             if(fileOut){
                     filePrintStream.close();
             }
         }
     }
 
-    private void newtonMethod(double x0, Function<Double, Double> func, Function<Double, Double> dFunc, double E){
+    private void newtonMethod(double a, double b, Function<Double, Double> func, Function<Double, Double> dFunc, double E){
         //Метод Ньютона
-        //x0 - начальное значение, func - функция, dFunc- производная функции, E - необходимая погрешность
+        //a, b - начальные границы, func - функция, dFunc- производная функции, E - необходимая погрешность
         int count = 0;
+        Function<Double, Double> ddfunc = x -> 6*x + 4.56;
+        double x0, x, div;
 
-        System.out.println("Как вы хотите вывести решение?");
-        System.out.println("1. В файл");
-        System.out.println("2. В консоль");
-
-        boolean fileOut = (scn.nextInt() == 1);
-
-        if(fileOut){
-            System.out.println("Поместите файл в папку src и введите название файла:");
-            String path = "YOUR PATH TO THE SRC FOLDER HERE" + scn.next();
-            try {
-                fos = new FileOutputStream(path);
-                filePrintStream = new PrintStream(fos);
-            }catch (IOException e){
-                System.err.println("Ошибка чтения файла!");
-            }
-        }
-
-        double x = x0 - (func.apply(x0) / dFunc.apply(x0));
-
-        if(fileOut){
-            filePrintStream.printf("%15s %15s %15s %15s %15s %15s %n",
-                    "Шаг", "Xn", "func(Xn)", "dfunc(Xn)", "Xn+1", "|Xn+1 - Xn|");
+        if(func.apply(a)*func.apply(b) >=0){
+            System.out.println("Корней нет! Знаки функции на краях промежутка совпадают!");
         }else {
-            System.out.printf("%15s %15s %15s %15s %15s %15s %n",
-                    "Шаг", "Xn", "func(Xn)", "dfunc(Xn)", "Xn+1", "|Xn+1 - Xn|");
-        }
 
-        while(Math.abs(x-x0) > E){
-            count ++;
+            System.out.println("Как вы хотите вывести решение?");
+            System.out.println("1. В файл");
+            System.out.println("2. В консоль");
+            boolean fileOut = (scn.nextInt() == 1);
+            if (fileOut) {
+                System.out.println("Поместите файл в папку src и введите название файла:");
+                String path = "PATH TO src" + scn.next();
+                try {
+                    fos = new FileOutputStream(path);
+                    filePrintStream = new PrintStream(fos);
+                } catch (IOException e) {
+                    System.err.println("Ошибка чтения файла!");
+                }
+            }
+            if (fileOut) {
+                filePrintStream.printf("%15s %15s %15s %15s %15s %15s %n",
+                        "Шаг", "Xn", "func(Xn)", "dfunc(Xn)", "Xn+1", "|Xn+1 - Xn|");
+            } else {
+                System.out.printf("%15s %15s %15s %15s %15s %15s %n",
+                        "Шаг", "Xn", "func(Xn)", "dfunc(Xn)", "Xn+1", "|Xn+1 - Xn|");
+            }
 
-            x0 = x;
-            x =x0 - (func.apply(x0) / dFunc.apply(x0));
-
-            if(fileOut){
-                filePrintStream.printf("%15d %15f %15f %15f %15f %15f %n",
-                        count, x0, func.apply(x), dFunc.apply(x), x, Math.abs(x - x0));
+            //Если значения функции и второй производной функции имеют одинаковые знаки, то берём Xn за левую границу
+            if(func.apply(a) * ddfunc.apply(a) > 0){
+                x = a;
             }else {
-                System.out.printf("%15d %15f %15f %15f %15f %15f %n",
-                        count, x0, func.apply(x), dFunc.apply(x), x, Math.abs(x - x0));
+                x = b;
+            }
+            div = func.apply(x) / dFunc.apply(x);
+
+            do{
+                count++;
+
+                x0 = x;
+                x = x0 - div;
+                div = func.apply(x) / dFunc.apply(x);
+
+                if (fileOut) {
+                    filePrintStream.printf("%15d %15f %15f %15f %15f %15f %n",
+                            count, x0, func.apply(x), dFunc.apply(x), x, Math.abs(x - x0));
+                } else {
+                    System.out.printf("%15d %15f %15f %15f %15f %15f %n",
+                            count, x0, func.apply(x), dFunc.apply(x), x, Math.abs(x - x0));
+                }
+                if (count > 350){
+                    break;
+                }
+            }while(Math.abs(x-x0) > E);
+
+            if (fileOut) {
+                filePrintStream.close();
             }
         }
-        filePrintStream.close();
     }
 
-    private void simpleIterationsMethod(double x0, double x1, Function<Double, Double> func, Function<Double, Double> dFunc, double E){
-        //x0, x1- начальное приближение, func - функция, dFunc - произовдная функции, E - необходимая погрешность
+    private void simpleIterationsMethod(double a, double b, Function<Double, Double> func, Function<Double, Double> dFunc, double E){
+        //a, b- границы, func - функция, dFunc - произовдная функции, E - необходимая погрешность
 
+        Function<Double, Double> dfi = x -> (x*(5.802*x+8.81904)) / 3.740356;
         int count = 0;
+        double x0, x, lambda;
 
+        if(func.apply(a)*func.apply(b) > 0){
+            System.out.println("Решений нет! На краях интервала функция имеет одинаковые знаки!");
 
-
-        double lambda = 1 / dFunc.apply(x1);
-
-        if((x0 - lambda*func.apply(x0))*(x1 - lambda*func.apply(x1)) > 0){
-            System.out.println("Решений нет!");
         }else{
 
             System.out.println("Как вы хотите вывести решение?");
@@ -142,7 +168,7 @@ public class EquationSolver {
 
             if(fileOut){
                 System.out.println("Поместите файл в папку src и введите название файла:");
-                String path = "YOUR PATH TO THE SRC FOLDER HERE" + scn.next();
+                String path = "PATH TO src" + scn.next();
                 try {
                     fos = new FileOutputStream(path);
                     filePrintStream = new PrintStream(fos);
@@ -159,12 +185,19 @@ public class EquationSolver {
                         "Шаг", "Xn", "func(Xn)", "Xn+1", "|Xn+1 - Xn|");
             }
 
-            double x = x0 - lambda * func.apply(x0);
+            if(dFunc.apply(a) > dFunc.apply(b)) {
+                x = a;
+            }else{
+                x = b;
+            }
 
-            while (Math.abs(x-x0) > E){
+            lambda = -1 / dFunc.apply(x);
+            x = x + lambda * func.apply(x);
+
+            do{
                 count++;
                 x0 = x;
-                x = x0 - lambda * func.apply(x0);
+                x = x0 + lambda * func.apply(x0);
 
                 if(fileOut){
                     filePrintStream.printf("%15d %15f %15f %15f %15f %n",
@@ -174,12 +207,19 @@ public class EquationSolver {
                             count, x0, func.apply(x0), x, Math.abs(x - x0));
                 }
 
+                if (count > 350){
+                    break;
+                }
+
+            }while(Math.abs(x - x0) > E);
+
+            if(fileOut){
+                filePrintStream.close();
             }
-            filePrintStream.close();
         }
     }
 
-    public void chordMethodSolver(Function<Double, Double> func){
+    public void chordMethodSolver(Function<Double, Double> func, Function<Double, Double> dfunc){
         System.out.println("Каким образом будете вводить данные?\n");
         System.out.println("1. Из файла");
         System.out.println("2. Вручную");
@@ -190,7 +230,7 @@ public class EquationSolver {
                 System.out.println("Файл должен содержать левую границу(a), правую границу(b), желаемую погрешность(E).");
                 System.out.println("Все числа должны быть записаны через пробел.\n");
                 System.out.println("Поместите файл в папку src и введите название файла:");
-                String path = "YOUR PATH TO THE SRC FOLDER HERE" + scn.next();
+                String path = "PATH TO src" + scn.next();
                 try {
                     Scanner sc = new Scanner(new File(path));
 
@@ -204,7 +244,7 @@ public class EquationSolver {
                         a = tmp;
                     }
 
-                    chordMethod(a, b, func, E);
+                    chordMethod(a, b, func, dfunc, E);
                     gc.buildGraph(func, a, b);
 
                 }catch (FileNotFoundException e){
@@ -227,19 +267,19 @@ public class EquationSolver {
                         a = tmp;
                     }
 
-                    chordMethod(a, b, func, E);
+                    chordMethod(a, b, func, dfunc, E);
                     gc.buildGraph(func, a, b);
 
                 } catch (InputMismatchException e) {
                     System.err.println("Введите числовой значение!\n");
                     scn.nextLine();
-                    chordMethodSolver(func);
+                    chordMethodSolver(func, dfunc);
 
                 }
                 break;
             default:
                 System.err.println("Вы ввели неверное значение!");
-                chordMethodSolver(func);
+                chordMethodSolver(func, dfunc);
         }
     }
 
@@ -255,14 +295,14 @@ public class EquationSolver {
                 System.out.println("Файл должен содержать начальное значение(x0), правую границу(x1), желаемую погрешность(E).");
                 System.out.println("Все числа должны быть записаны через пробел.\n");
                 System.out.println("Поместите файл в папку src и введите название файла:");
-                String path = "YOUR PATH TO THE SRC FOLDER HERE" + scn.next();
+                String path = "E:\\CompMath_Lab3_NonlinearEquations-master\\src\\" + scn.next();
                 try {
                     Scanner sc = new Scanner(new File(path));
 
                     double x0 = sc.nextDouble();
                     double x1 = sc.nextDouble();
                     double E = sc.nextDouble();
-                    newtonMethod(x0, func, dfunc, E);
+                    newtonMethod(x0, x1, func, dfunc, E);
                     gc.buildGraph(func, x0, x1);
 
                 } catch (FileNotFoundException e) {
@@ -279,7 +319,7 @@ public class EquationSolver {
                     System.out.println("Введите желаемую погрешность:");
                     double E = scn.nextDouble();
 
-                    newtonMethod(x0, func, dfunc, E);
+                    newtonMethod(x0, x1, func, dfunc, E);
                     gc.buildGraph(func, x0, x1);
 
                 } catch (InputMismatchException e) {
@@ -290,7 +330,7 @@ public class EquationSolver {
                 break;
             default:
                 System.err.println("Вы ввели неверное значение!");
-                chordMethodSolver(func);
+                newtonMethodSolver(func, dfunc);
         }
 
     }
@@ -306,7 +346,7 @@ public class EquationSolver {
                 System.out.println("Файл должен содержать левую границу(x0), правую границу(x1), желаемую погрешность(E).");
                 System.out.println("Все числа должны быть записаны через пробел.\n");
                 System.out.println("Поместите файл в папку src и введите название файла:");
-                String path = "YOUR PATH TO THE SRC FOLDER HERE" + scn.next();
+                String path = "PATH TO src" + scn.next();
                 try {
                     Scanner sc = new Scanner(new File(path));
 
@@ -354,9 +394,29 @@ public class EquationSolver {
                 break;
             default:
                 System.err.println("Вы ввели неверное значение!");
-                chordMethodSolver(func);
+                simpleIterationsSolver(func, dfunc);
         }
     }
+
+    private static boolean singleRootCheck(Function<Double, Double> func, Function<Double, Double> dfunc, double a, double b){
+        //a, b -  границы функции, func - функция, dFunc - производная функциии
+
+        if(Math.signum(func.apply(a))*Math.signum(func.apply(b)) > 0) {
+            System.err.println("Найти единственный корень не удалось! Знаки функций различны на краях отрезка!");
+            return false;
+        }
+
+        double sign = Math.signum(dfunc.apply(a));
+        double step = (b - a) / 1000;
+        for(; a < b; a += step ){
+            if(Math.signum(dfunc.apply(a)) != sign) {
+                System.err.println("Найти единственный корень не удалось! Производная функции не сохраняет знак внутри отрезка!");
+                return false;
+            }
+        }
+        return true;
+    }
+
 }
 
 
