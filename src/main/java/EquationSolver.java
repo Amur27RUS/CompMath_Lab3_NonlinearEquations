@@ -184,41 +184,50 @@ public class EquationSolver {
                 System.out.printf("%15s %15s %15s %15s %15s %n",
                         "Шаг", "Xn", "func(Xn)", "Xn+1", "|Xn+1 - Xn|");
             }
-
-            if(dFunc.apply(a) > dFunc.apply(b)) {
+   if (dFunc.apply(a) > dFunc.apply(b)) {
                 x = a;
-            }else{
+            } else {
                 x = b;
             }
 
             lambda = -1 / dFunc.apply(x);
-            x = x + lambda * func.apply(x);
+            double dfia = (3 * Math.pow(a, 2) + 4.56 * a - 1.934) * lambda + 1;
+            double dfib = (3 * Math.pow(b, 2) + 4.56 * b - 1.934) * lambda + 1;
 
-            do{
-                count++;
-                x0 = x;
-                x = x0 + lambda * func.apply(x0);
+            //Проверка сходимости метода простой итерации
 
-                if(fileOut){
-                    filePrintStream.printf("%15d %15f %15f %15f %15f %n",
-                            count, x0, func.apply(x0), x, Math.abs(x - x0));
-                }else {
-                    System.out.printf("%15d %15f %15f %15f %15f %n",
-                            count, x0, func.apply(x0), x, Math.abs(x - x0));
+            if (Math.abs(dfia) >= 1 & Math.abs(dfib) >= 1) {
+                System.err.println("Начальное приближение выбрано неверно, не выполняется достаточное условие сходимости метода.");
+
+            } else {
+
+                x = x + lambda * func.apply(x);
+
+                do {
+                    count++;
+                    x0 = x;
+                    x = x0 + lambda * func.apply(x0);
+
+                    if (fileOut) {
+                        filePrintStream.printf("%15d %15f %15f %15f %15f %n",
+                                count, x0, func.apply(x0), x, Math.abs(x - x0));
+                    } else {
+                        System.out.printf("%15d %15f %15f %15f %15f %n",
+                                count, x0, func.apply(x0), x, Math.abs(x - x0));
+                    }
+
+                    if (count > 350) {
+                        break;
+                    }
+
+                } while (Math.abs(x - x0) > E | Math.abs(func.apply(x0)) > E);
+
+                if (fileOut) {
+                    filePrintStream.close();
                 }
-
-                if (count > 350){
-                    break;
-                }
-
-            }while(Math.abs(x - x0) > E);
-
-            if(fileOut){
-                filePrintStream.close();
             }
         }
     }
-
     public void chordMethodSolver(Function<Double, Double> func, Function<Double, Double> dfunc){
         System.out.println("Каким образом будете вводить данные?\n");
         System.out.println("1. Из файла");
